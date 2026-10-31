@@ -5,6 +5,14 @@ const dialElements = document.querySelectorAll(".dial");
 const combinationSlots = document.querySelectorAll(".combination-slot");
 const spinCountDisplay = document.querySelector(".spin-count-number");
 
+const safe = document.querySelector(".safe");
+const rewardPanel = document.querySelector(".reward-panel");
+const rewardTitle = document.querySelector(".reward-title");
+const rewardArt = document.querySelector(".reward-art");
+const rewardMessage = document.querySelector(".reward-message");
+const rewardSpins = document.querySelector(".reward-spins");
+const rewardRating = document.querySelector(".reward-rating");
+
 // Game configuration
 const SPIN_DURATION = 4000;
 let spinCount = 0;
@@ -13,6 +21,129 @@ const dialConfig = [
   { direction: 1, rotations: 6, totalNumbers: 5 },
   { direction: -1, rotations: 8, totalNumbers: 10 },
   { direction: 1, rotations: 10, totalNumbers: 15 },
+];
+
+const rewards = [
+  {
+    title: "TREASURE FOUND",
+    message: "You struck gold!",
+    art: String.raw`
+       .-""""-.
+      /  GOLD  \
+     |  $$$$$$  |
+      \________/
+    `,
+  },
+  {
+    title: "MASTER CRACKER",
+    message: "Nothing can stop you.",
+    art: String.raw`
+        _____
+       /     \
+      |  X X  |
+      |   ^   |
+       \ \_/ /
+        |___|
+    `,
+  },
+  {
+    title: "MYSTERY SOLVED",
+    message: "Some secrets are better left hidden.",
+    art: String.raw`
+       .-------.
+      /  ?????  \
+     |  ???????  |
+      \_________/
+    `,
+  },
+  {
+    title: "NICE CATCH",
+    message: "You've got a whale of a time ahead.",
+    art:
+      String.raw`
+       /` +
+      "`" +
+      String.raw`--.
+  __/ o  \
+ <_  ___/
+   \/
+    `,
+  },
+  {
+    title: "A WINNER!",
+    message: "Take a bow. You've earned it.",
+    art: String.raw`
+       ___________
+      '._==_==_.'
+        \:::::/
+         |:::|
+         |:::|
+        [_____]
+       /_______\
+    `,
+  },
+  {
+    title: "BAD TO THE BONE",
+    message: "Well, that was a little spooky.",
+    art: String.raw`
+       .-.
+      (o.o)
+       |=|
+      __|__
+     /     \
+    `,
+  },
+  {
+    title: "OUT OF THIS WORLD",
+    message: "Houston, we have a winner!",
+    art: String.raw`
+         .
+        / \
+       /___\
+      |     |
+      | NASA|
+      |_____|
+       /   \
+      /_____\
+    `,
+  },
+  {
+    title: "LUCKY YOU",
+    message: "Four leaves, one lucky player.",
+    art: String.raw`
+         .-.
+      .-(   )-.
+     (   \|/   )
+      '-. | .-'
+         \|/
+          |
+    `,
+  },
+  {
+    title: "TOP SECRET",
+    message: "You've uncovered classified information.",
+    art: String.raw`
+      ___________
+     |           |
+     | TOP SECRET|
+     |___________|
+        |     |
+        |_____|
+    `,
+  },
+  {
+    title: "JACKPOT!",
+    message: "The house always wins. Except today.",
+    art: String.raw`
+       _______
+      | 77777 |
+      | 77777 |
+      | 77777 |
+      |_______|
+        |   |
+       _|___|_
+    `,
+  },
 ];
 
 // Game state
@@ -122,6 +253,10 @@ async function spinGame() {
 
   if (unmatchedDials.length === 0) return;
 
+  spinCount++;
+
+  spinCountDisplay.textContent = spinCount;
+
   spinButton.disabled = true;
 
   status.textContent = "Cracking the safe...";
@@ -161,10 +296,17 @@ async function spinGame() {
 
     status.textContent = messages.join(" ");
 
-    spinButton.textContent = "OPEN";
+    spinButton.textContent = "UNLOCKED";
     spinButton.disabled = true;
 
-    resetButton.hidden = false;
+    // Start the winning animation
+    safe.classList.add("unlocked");
+
+    // Show the reward after the door starts opening
+    setTimeout(() => {
+      showReward();
+      resetButton.hidden = false;
+    }, 1200);
   } else {
     status.textContent = [
       ...messages,
@@ -173,11 +315,6 @@ async function spinGame() {
 
     spinButton.disabled = false;
   }
-
-  // Increment spin count
-  spinCount++;
-
-  spinCountDisplay.textContent = spinCount;
 }
 
 // Reset the game
@@ -223,6 +360,39 @@ function resetGame() {
   // Reset spin count
   spinCount = 0;
   spinCountDisplay.textContent = spinCount;
+
+  // Hide reward panel
+  safe.classList.remove("unlocked");
+  rewardPanel.hidden = true;
+}
+
+function showReward() {
+  // Select a random reward
+  const reward = rewards[Math.floor(Math.random() * rewards.length)];
+
+  // Calculate performance rating
+  let rating;
+
+  if (spinCount <= 3) {
+    rating = "MASTER CRACKER";
+  } else if (spinCount <= 6) {
+    rating = "EXPERT CRACKER";
+  } else if (spinCount <= 10) {
+    rating = "SAFE CRACKER";
+  } else {
+    rating = "PERSISTENCE PAYS OFF";
+  }
+
+  // Populate reward panel
+  rewardTitle.textContent = reward.title;
+  rewardArt.textContent = reward.art;
+  rewardMessage.textContent = reward.message;
+
+  rewardSpins.textContent = `${spinCount} SPINS`;
+  rewardRating.textContent = rating;
+
+  // Reveal reward panel
+  rewardPanel.hidden = false;
 }
 
 // Initialize the game

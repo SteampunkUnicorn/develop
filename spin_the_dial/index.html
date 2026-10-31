@@ -14,47 +14,67 @@
       </header>
 
       <section class="safe">
-        <div class="combination-display">
-          <div class="combination-slot" data-slot="0">
-            <span class="slot-label">01</span>
-            <span class="slot-number">?</span>
+        <div class="safe-door">
+          <div class="combination-display">
+            <div class="combination-slot" data-slot="0">
+              <span class="slot-label">01</span>
+              <span class="slot-number">?</span>
+            </div>
+
+            <div class="combination-slot" data-slot="1">
+              <span class="slot-label">02</span>
+              <span class="slot-number">?</span>
+            </div>
+
+            <div class="combination-slot" data-slot="2">
+              <span class="slot-label">03</span>
+              <span class="slot-number">?</span>
+            </div>
+            <div class="spin-count">
+              <span class="spin-count-label">SPINS</span>
+              <span class="spin-count-number">0</span>
+            </div>
+          </div>
+          <div class="safe-dials">
+            <div class="dial" data-dial="0">
+              <div class="dial-ring"></div>
+              <div class="dial-indicator"></div>
+            </div>
+
+            <div class="dial" data-dial="1">
+              <div class="dial-ring"></div>
+              <div class="dial-indicator"></div>
+            </div>
+
+            <div class="dial" data-dial="2">
+              <div class="dial-ring"></div>
+              <div class="dial-indicator"></div>
+            </div>
           </div>
 
-          <div class="combination-slot" data-slot="1">
-            <span class="slot-label">02</span>
-            <span class="slot-number">?</span>
+          <button class="spin-button" type="button">SPIN</button>
+
+          <div class="game-status" aria-live="polite">
+            Find the combination.
           </div>
 
-          <div class="combination-slot" data-slot="2">
-            <span class="slot-label">03</span>
-            <span class="slot-number">?</span>
+          <button class="reset-button" type="button" hidden>PLAY AGAIN</button>
+        </div>
+        <div class="reward-panel" hidden>
+          <div class="reward-header">
+            <span class="reward-label">SAFE UNLOCKED</span>
+            <h2 class="reward-title"></h2>
           </div>
-          <div class="spin-count">
-            <span class="spin-count-label">SPINS</span>
-            <span class="spin-count-number">0</span>
+
+          <pre class="reward-art"></pre>
+
+          <p class="reward-message"></p>
+
+          <div class="reward-stats">
+            <span class="reward-spins"></span>
+            <span class="reward-rating"></span>
           </div>
         </div>
-        <div class="safe-dials">
-          <div class="dial" data-dial="0">
-            <div class="dial-ring"></div>
-            <div class="dial-indicator"></div>
-          </div>
-
-          <div class="dial" data-dial="1">
-            <div class="dial-ring"></div>
-            <div class="dial-indicator"></div>
-          </div>
-
-          <div class="dial" data-dial="2">
-            <div class="dial-ring"></div>
-            <div class="dial-indicator"></div>
-          </div>
-        </div>
-
-        <button class="spin-button" type="button">SPIN</button>
-
-        <div class="game-status" aria-live="polite">Find the combination.</div>
-        <button class="reset-button" type="button" hidden>PLAY AGAIN</button>
       </section>
     </main>
 
