@@ -5,6 +5,7 @@ const dialElements = document.querySelectorAll(".dial");
 const combinationSlots = document.querySelectorAll(".combination-slot");
 const spinCountDisplay = document.querySelector(".spin-count-number");
 const replayButton = document.querySelector(".replay-button");
+const guessForms = document.querySelectorAll(".dial-guess");
 
 const safe = document.querySelector(".safe");
 const rewardPanel = document.querySelector(".reward-panel");
@@ -239,6 +240,109 @@ function spinDial(dial) {
   dial.number = nextNumber;
 }
 
+// Mark a dial as solved using either a spin or a manual guess.
+function markDialMatched(dial, index, matchedNumber) {
+  dial.matched = true;
+  dial.element.classList.add("matched");
+
+  const slot = combinationSlots[index];
+  slot.querySelector(".slot-number").textContent = matchedNumber;
+  slot.classList.add("matched");
+
+  const form = dial.element.querySelector(".dial-guess");
+  form.querySelector(".guess-input").disabled = true;
+  form.querySelector(".guess-button").disabled = true;
+
+  messages.push(`Dial ${index + 1} matched!`);
+}
+
+// Handle the shared completion state after a spin or manual guess.
+function updateGameProgress() {
+  const remaining = dials.filter((dial) => !dial.matched).length;
+  const matched = dials.length - remaining;
+
+  if (remaining === 0) {
+    messages.push("SUCCESS! Safe unlocked!");
+    status.textContent = messages.join(" ");
+
+    spinButton.textContent = "UNLOCKED";
+    spinButton.disabled = true;
+
+    showReward();
+    safe.classList.add("unlocked");
+    showResetWhenDone();
+    return;
+  }
+
+  status.textContent = [
+    ...messages,
+    `${matched} matched. ${remaining} remaining.`,
+  ].join(" ");
+
+  spinButton.disabled = false;
+}
+
+function showInvalidGuess(input) {
+  input.readOnly = true;
+
+  // Restart the animation every time
+  input.classList.remove("incorrect");
+  void input.offsetWidth;
+  input.classList.add("incorrect");
+
+  input.addEventListener(
+    "animationend",
+    () => {
+      input.value = "";
+      input.readOnly = false;
+      input.classList.remove("incorrect");
+    },
+    { once: true },
+  );
+}
+
+// A valid manual guess counts as one attempt, whether it is right or wrong.
+function testDialGuess(event) {
+  event.preventDefault();
+
+  const form = event.currentTarget;
+  const index = Number(form.dataset.guess);
+  const input = form.querySelector(".guess-input");
+  const guess = Number(input.value);
+  const dial = dials[index];
+  const max = [5, 10, 15][index];
+
+  // Don't allow guesses on an already matched dial
+  if (dial.matched) return;
+
+  // Empty submission does not count as an attempt
+  if (input.value.trim() === "") {
+    status.textContent = "Please enter a number to test!";
+    showInvalidGuess(input);
+    return;
+  }
+
+  // Count every non-empty guess
+  spinCount++;
+  spinCountDisplay.textContent = spinCount;
+
+  // Check whether the number is valid
+  if (!Number.isInteger(guess) || guess < 1 || guess > max) {
+    status.textContent = `Invalid number! Enter a whole number between 1 and ${max}.`;
+    showInvalidGuess(input);
+    return;
+  }
+
+  // Check whether the guess matches the target
+  if (guess === targetCombination[index]) {
+    markDialMatched(dial, index, guess);
+    updateGameProgress();
+  } else {
+    status.textContent = "Incorrect guess! Try another number.";
+    showInvalidGuess(input);
+  }
+}
+
 // Handle the game
 async function spinGame() {
   const exhaustedDial = dials.find(
@@ -260,6 +364,10 @@ async function spinGame() {
   spinCountDisplay.textContent = spinCount;
 
   spinButton.disabled = true;
+  guessForms.forEach((form) => {
+    form.querySelector(".guess-input").disabled = true;
+    form.querySelector(".guess-button").disabled = true;
+  });
 
   status.textContent = "Cracking the safe...";
 
@@ -275,42 +383,19 @@ async function spinGame() {
     const target = targetCombination[index];
 
     if (dial.number === target) {
-      dial.matched = true;
-
-      dial.element.classList.add("matched");
-
-      // Reveal the matched number in the combination display
-      const slot = combinationSlots[index];
-
-      slot.querySelector(".slot-number").textContent = target;
-      slot.classList.add("matched");
-
-      messages.push(`Dial ${index + 1} matched!`);
+      markDialMatched(dial, index, target);
     }
   });
 
-  const remaining = dials.filter((dial) => !dial.matched).length;
+  updateGameProgress();
 
-  const matched = dials.length - remaining;
-
-  if (remaining === 0) {
-    messages.push("SUCCESS! Safe unlocked!");
-    status.textContent = messages.join(" ");
-
-    spinButton.textContent = "UNLOCKED";
-    spinButton.disabled = true;
-
-    showReward(); // unhides the panel; CSS delays handle timing
-    safe.classList.add("unlocked"); // door starts swinging in the same frame
-    showResetWhenDone();
-  } else {
-    status.textContent = [
-      ...messages,
-      `${matched} matched. ${remaining} remaining.`,
-    ].join(" ");
-
-    spinButton.disabled = false;
-  }
+  dials.forEach((dial) => {
+    if (!dial.matched && !spinButton.disabled) {
+      const form = dial.element.querySelector(".dial-guess");
+      form.querySelector(".guess-input").disabled = false;
+      form.querySelector(".guess-button").disabled = false;
+    }
+  });
 }
 
 function showResetWhenDone() {
@@ -356,6 +441,17 @@ function resetGame() {
       { length: dial.config.totalNumbers },
       (_, i) => i + 1,
     );
+
+    const guessForm = dial.element.querySelector(".dial-guess");
+    guessForm.reset();
+
+    const guessInput = guessForm.querySelector(".guess-input");
+
+    guessInput.disabled = false;
+    guessInput.readOnly = false;
+    guessInput.classList.remove("incorrect");
+
+    guessForm.querySelector(".guess-button").disabled = false;
   });
 
   // Reset the combination display
@@ -418,6 +514,10 @@ function initGame() {
   createDials();
 
   spinButton.addEventListener("click", spinGame);
+
+  guessForms.forEach((form) => {
+    form.addEventListener("submit", testDialGuess);
+  });
 
   resetButton.addEventListener("click", resetGame);
 }

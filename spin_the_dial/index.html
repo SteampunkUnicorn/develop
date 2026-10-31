@@ -11,6 +11,7 @@
       <header class="game-header">
         <h1>Crack the Safe</h1>
         <p>Find the three numbers to unlock the safe.</p>
+        <p>Spin the wheels or choose your number.</p>
       </header>
 
       <section class="safe">
@@ -39,16 +40,61 @@
             <div class="dial" data-dial="0">
               <div class="dial-ring"></div>
               <div class="dial-indicator"></div>
+              <form class="dial-guess" data-guess="0" novalidate>
+                <label class="visually-hidden" for="guess-1"
+                  >Guess for dial 1 (1 to 5)</label
+                >
+                <input
+                  id="guess-1"
+                  class="guess-input"
+                  type="number"
+                  min="1"
+                  max="5"
+                  placeholder="?"
+                  inputmode="numeric"
+                />
+                <button class="guess-button" type="submit">CHECK</button>
+              </form>
             </div>
 
             <div class="dial" data-dial="1">
               <div class="dial-ring"></div>
               <div class="dial-indicator"></div>
+              <form class="dial-guess" data-guess="1" novalidate>
+                <label class="visually-hidden" for="guess-2"
+                  >Guess for dial 2 (1 to 10)</label
+                >
+                <input
+                  id="guess-2"
+                  class="guess-input"
+                  type="number"
+                  min="1"
+                  max="10"
+                  placeholder="?"
+                  inputmode="numeric"
+                />
+                <button class="guess-button" type="submit">CHECK</button>
+              </form>
             </div>
 
             <div class="dial" data-dial="2">
               <div class="dial-ring"></div>
               <div class="dial-indicator"></div>
+              <form class="dial-guess" data-guess="2" novalidate>
+                <label class="visually-hidden" for="guess-3"
+                  >Guess for dial 3 (1 to 15)</label
+                >
+                <input
+                  id="guess-3"
+                  class="guess-input"
+                  type="number"
+                  min="1"
+                  max="15"
+                  placeholder="?"
+                  inputmode="numeric"
+                />
+                <button class="guess-button" type="submit">CHECK</button>
+              </form>
             </div>
           </div>
 
