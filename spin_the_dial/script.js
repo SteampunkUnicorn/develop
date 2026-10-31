@@ -4,6 +4,7 @@ const status = document.querySelector(".game-status");
 const dialElements = document.querySelectorAll(".dial");
 const combinationSlots = document.querySelectorAll(".combination-slot");
 const spinCountDisplay = document.querySelector(".spin-count-number");
+const replayButton = document.querySelector(".replay-button");
 
 const safe = document.querySelector(".safe");
 const rewardPanel = document.querySelector(".reward-panel");
@@ -12,6 +13,7 @@ const rewardArt = document.querySelector(".reward-art");
 const rewardMessage = document.querySelector(".reward-message");
 const rewardSpins = document.querySelector(".reward-spins");
 const rewardRating = document.querySelector(".reward-rating");
+const rewardStats = document.querySelector(".reward-stats");
 
 // Game configuration
 const SPIN_DURATION = 4000;
@@ -293,20 +295,14 @@ async function spinGame() {
 
   if (remaining === 0) {
     messages.push("SUCCESS! Safe unlocked!");
-
     status.textContent = messages.join(" ");
 
     spinButton.textContent = "UNLOCKED";
     spinButton.disabled = true;
 
-    // Start the winning animation
-    safe.classList.add("unlocked");
-
-    // Show the reward after the door starts opening
-    setTimeout(() => {
-      showReward();
-      resetButton.hidden = false;
-    }, 1200);
+    showReward(); // unhides the panel; CSS delays handle timing
+    safe.classList.add("unlocked"); // door starts swinging in the same frame
+    showResetWhenDone();
   } else {
     status.textContent = [
       ...messages,
@@ -315,6 +311,25 @@ async function spinGame() {
 
     spinButton.disabled = false;
   }
+}
+
+function showResetWhenDone() {
+  const reduceMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)",
+  ).matches;
+
+  if (reduceMotion) {
+    resetButton.hidden = false; // no animation means no animationend
+    return;
+  }
+
+  rewardStats.addEventListener(
+    "animationend",
+    () => {
+      resetButton.hidden = false;
+    },
+    { once: true },
+  );
 }
 
 // Reset the game
@@ -394,6 +409,7 @@ function showReward() {
   // Reveal reward panel
   rewardPanel.hidden = false;
 }
+replayButton.addEventListener("click", resetGame);
 
 // Initialize the game
 function initGame() {
