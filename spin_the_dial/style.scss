@@ -1,16 +1,19 @@
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap");
+
 :root {
+  --safe-door: #585858;
+  --machine-blue: #3d5368;
+  --gunmetal: #697b85;
   --safe-size: 460px;
   --dial-size: 150px;
   --dial-radius: 60px;
   --transition-speed: 6s;
 
-  // Safe-opening timeline
   --door-duration: 1.2s;
-  --glow-delay: 0.5s; // glow starts while the door is still swinging
+  --glow-delay: 0.5s;
   --glow-duration: 1.2s;
-  --reveal-delay: var(--door-duration); // reward content waits for the door
-  --replay-gap: 2s; // pause after the reward finishes before the replay button fades in
-  // Last reward item (stats) finishes at its 1050ms delay + 600ms duration
+  --reveal-delay: var(--door-duration);
+  --replay-gap: 2s;
   --reveal-end: calc(var(--reveal-delay) + 1650ms);
   --replay-delay: calc(var(--reveal-end) + var(--replay-gap));
 }
@@ -24,9 +27,34 @@ body {
   margin: 0;
   display: grid;
   place-items: center;
-  background: #17191d;
+  background: var(--safe-door);
   color: #fff;
-  font-family: sans-serif;
+  font-family: "IBM Plex Mono", monospace;
+
+  &::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+
+    background-image: url("vault.webp");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    // Fade the outer edges
+    -webkit-mask-image: radial-gradient(
+      ellipse 85% 85% at center,
+      #000 55%,
+      transparent 100%
+    );
+
+    mask-image: radial-gradient(
+      ellipse 85% 85% at center,
+      #000 55%,
+      transparent 100%
+    );
+  }
 }
 
 .game {
@@ -35,26 +63,37 @@ body {
 }
 
 .game-header {
-  margin-bottom: 40px;
+  margin-bottom: 15px;
+  border: 8px solid #555b65;
+  border-radius: 24px;
+  background-color: rgba(68, 75, 85, 0.9);
+  box-shadow:
+    0 20px 50px #0008,
+    inset 0 2px 10px #ffffff20;
 
   h1 {
     margin-bottom: 8px;
+    font-family: "Oswald", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 2px;
   }
 
   p {
-    color: #999;
+    color: #fff;
+    margin-top: 0;
+    margin-bottom: 5px;
   }
 }
 
 .safe {
   position: relative;
   width: 100%;
-  max-width: var(--safe-size);
+  //max-width: var(--safe-size);
   margin: auto;
-  padding: 50px 20px;
+  padding: 20px;
   border: 8px solid #555b65;
   border-radius: 24px;
-  background: linear-gradient(145deg, #444b55, #242830);
+  background-color: rgba(68, 75, 85, 0.9);
   box-shadow:
     0 20px 50px #0008,
     inset 0 2px 10px #ffffff20;
@@ -144,7 +183,7 @@ body {
   padding: 12px 0;
   border: 2px solid #17191d;
   border-radius: 8px;
-  background: #252a32;
+  background: rgba(37, 42, 50, 0.5);
 
   .slot-label {
     font-size: 10px;
@@ -155,7 +194,6 @@ body {
   .slot-number {
     font-size: 28px;
     font-weight: 800;
-    color: #777;
   }
 
   &.matched {
@@ -177,7 +215,7 @@ body {
   padding: 12px;
   border: 2px solid #17191d;
   border-radius: 8px;
-  background: #252a32;
+  background: rgba(37, 42, 50, 0.5);
 
   .spin-count-label {
     font-size: 10px;
@@ -188,7 +226,6 @@ body {
   .spin-count-number {
     font-size: 28px;
     font-weight: 800;
-    color: #e5ad42;
   }
 }
 
@@ -280,8 +317,8 @@ body {
   }
 
   &:focus {
-    border-color: #e5ad42;
-    box-shadow: 0 0 0 2px #e5ad4240;
+    border-color: var(--machine-blue);
+    box-shadow: 0 0 0 2px var(--gunmetal);
   }
 
   &:disabled {
@@ -291,17 +328,13 @@ body {
 
 .guess-button {
   padding: 3px 6px;
-  border: 1px solid #80551e;
+  border: 1px solid var(--gunmetal);
   border-radius: 4px;
-  background: #c38a35;
+  background: var(--machine-blue);
   color: #fff;
   font-size: 9px;
   font-weight: 800;
   cursor: pointer;
-
-  &:hover:not(:disabled) {
-    background: #dda448;
-  }
 
   &:disabled {
     opacity: 0.5;
@@ -323,14 +356,14 @@ body {
 
 .dial-indicator {
   position: absolute;
-  top: 5px;
+  top: -6px;
   left: 50%;
   width: 0;
   height: 0;
   transform: translateX(-50%);
   border-left: 7px solid transparent;
   border-right: 7px solid transparent;
-  border-top: 12px solid #e5ad42;
+  border-top: 12px solid var(--machine-blue);
   z-index: 2;
 }
 
@@ -340,21 +373,21 @@ body {
   width: 76px;
   height: 76px;
   margin-top: 30px;
-  border: 5px solid #17191d;
+  border: 5px solid rgba(105, 123, 133, 0.4);
   border-radius: 50%;
-  background: #c38a35;
+  background: var(--machine-blue);
   color: #fff;
-  font-weight: 800;
   cursor: pointer;
-  box-shadow: 0 5px 0 #80551e;
+  font-family: "Oswald", sans-serif;
+  font-weight: 500;
+  letter-spacing: 2px;
 
   &:hover {
-    background: #dda448;
+    background: var(--gunmetal);
   }
 
   &:active {
     transform: translateY(3px);
-    box-shadow: 0 2px 0 #80551e;
   }
 
   &:disabled {
@@ -367,13 +400,12 @@ body {
   min-height: 24px;
   margin-top: 24px;
   color: #ddd;
-  font-size: 14px;
+  font-size: 20px;
 }
 
 .reset-button {
   margin-top: 20px;
   padding: 12px 24px;
-  border: 1px solid #c38a35;
   border-radius: 6px;
   background: transparent;
   color: #fff;
@@ -388,7 +420,7 @@ body {
   }
 
   &:hover {
-    background: #c38a35;
+    background: var(--gunmetal);
   }
 }
 

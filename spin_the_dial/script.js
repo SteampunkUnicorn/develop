@@ -312,6 +312,8 @@ function testDialGuess(event) {
   const dial = dials[index];
   const max = [5, 10, 15][index];
 
+  resetButton.hidden = false;
+
   // Don't allow guesses on an already matched dial
   if (dial.matched) return;
 
@@ -358,6 +360,9 @@ async function spinGame() {
   const unmatchedDials = dials.filter((dial) => !dial.matched);
 
   if (unmatchedDials.length === 0) return;
+
+  // Show reset button when gameplay begins
+  resetButton.hidden = false;
 
   spinCount++;
 
