@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta
+      name="description"
+      content="Move to dodge. Collect green for a shield."
+    />
+    <title>Riley's Run</title>
+    <link rel="stylesheet" href="style.min.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>Riley's Run</h1>
+        <div class="score">Score <strong id="score">0</strong></div>
+        <button id="pause" aria-label="Pause game" disabled>Pause</button>
+      </header>
+      <section class="arena" aria-label="Game">
+        <canvas
+          id="game"
+          aria-label="Use left and right arrows, A and D, or drag to move."
+        ></canvas>
+        <div id="overlay">
+          <h2 id="title">Ready?</h2>
+          <p id="message">Dodge red. Collect green for a shield.</p>
+          <button id="play">Play</button>
+        </div>
+      </section>
+      <footer>
+        <p>← → or A / D to move · Drag on touch · Space to pause</p>
+      </footer>
+    </main>
+    <script src="game.js"></script>
+  </body>
+</html>
