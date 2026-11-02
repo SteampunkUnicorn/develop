@@ -93,7 +93,7 @@ body {
   padding: 20px;
   border: 8px solid #555b65;
   border-radius: 24px;
-  background-color: rgba(68, 75, 85, 0.9);
+  background-color: rgba(68, 75, 85, 0.6);
   box-shadow:
     0 20px 50px #0008,
     inset 0 2px 10px #ffffff20;
@@ -183,7 +183,7 @@ body {
   padding: 12px 0;
   border: 2px solid #17191d;
   border-radius: 8px;
-  background: rgba(37, 42, 50, 0.5);
+  background: rgba(37, 42, 50, 0.8);
 
   .slot-label {
     font-size: 10px;
@@ -215,7 +215,7 @@ body {
   padding: 12px;
   border: 2px solid #17191d;
   border-radius: 8px;
-  background: rgba(37, 42, 50, 0.5);
+  background: rgba(37, 42, 50, 0.8);
 
   .spin-count-label {
     font-size: 10px;
@@ -224,7 +224,7 @@ body {
   }
 
   .spin-count-number {
-    font-size: 28px;
+    font-size: 15px;
     font-weight: 800;
   }
 }
@@ -397,10 +397,28 @@ body {
 }
 
 .game-status {
+  width: 100%;
+  min-width: 0;
   min-height: 24px;
   margin-top: 24px;
   color: #ddd;
-  font-size: 20px;
+  font-size: clamp(12px, 3vw, 20px);
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+
+  &.status-updated {
+    animation: status-flicker 250ms steps(2, end);
+  }
+}
+
+@keyframes status-flicker {
+  0% { opacity: 0.3; }
+  50% { opacity: 1; }
+  75% { opacity: 0.5; }
+  100% { opacity: 1; }
 }
 
 .reset-button {
@@ -675,4 +693,234 @@ body {
       inset 0 0 25px #36c77a30,
       0 0 15px #36c77a40;
   }
+}
+
+// ------------------------------------------------------------
+// Attempt limit: warning, lockout, and ACCESS DENIED screen
+// The game applies attempt-warning / attempt-danger / locked-out
+// to .safe and access-denied to .reward-panel.
+// ------------------------------------------------------------
+
+.spin-count {
+  transition:
+    color 300ms ease,
+    border-color 300ms ease,
+    box-shadow 300ms ease;
+}
+
+.safe.attempt-warning .spin-count {
+  border-color: #ffbf47;
+  color: #ffbf47;
+  box-shadow: 0 0 12px rgba(255, 191, 71, 0.25);
+}
+
+.safe.attempt-danger .spin-count {
+  border-color: #ff4d5a;
+  color: #ff4d5a;
+  box-shadow: 0 0 16px rgba(255, 77, 90, 0.4);
+  animation: counter-pulse 800ms ease-in-out infinite;
+}
+
+.safe.locked-out {
+  // Shake the door, not .safe itself, to avoid disrupting its 3D perspective.
+  .safe-door {
+    transform: rotateY(0deg);
+    animation: safe-lockout-shake 500ms ease-in-out;
+  }
+
+  .spin-button {
+    background: #6b1e28;
+    color: #ff9aa3;
+    border-color: #ff4d5a;
+    box-shadow:
+      0 0 15px rgba(255, 77, 90, 0.5),
+      inset 0 0 12px rgba(255, 77, 90, 0.2);
+    cursor: not-allowed;
+    animation: lockout-glow 1.5s ease-in-out infinite;
+  }
+
+  .game-status {
+    color: #ff4d5a;
+    text-shadow: 0 0 10px rgba(255, 77, 90, 0.5);
+  }
+
+  .dial:not(.matched) {
+    border-color: #ff4d5a;
+    box-shadow: 0 0 12px rgba(255, 77, 90, 0.4);
+  }
+
+  .dial-guess {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  .reset-button {
+    border: 1px solid #ff4d5a;
+    color: #ff8992;
+
+    &:hover,
+    &:focus-visible {
+      background: #ff4d5a;
+      color: #140d10;
+      box-shadow: 0 0 15px rgba(255, 77, 90, 0.5);
+    }
+  }
+
+  // Unlike the winning state, the door remains closed on failure.
+  // Put the failure screen in front of the closed door.
+  .reward-panel.access-denied {
+    z-index: 5;
+  }
+}
+
+.reward-panel.access-denied {
+  border-color: #ff4d5a;
+  background: #140d10;
+  color: #ff8992;
+  box-shadow:
+    inset 0 0 30px rgba(255, 77, 90, 0.1),
+    0 0 20px rgba(255, 77, 90, 0.25);
+  animation: access-denied-enter 600ms ease-out both;
+
+  .reward-title {
+    color: #ff4d5a;
+    text-shadow: 0 0 12px rgba(255, 77, 90, 0.5);
+    animation: denied-flicker 2s ease-in-out 2;
+  }
+
+  .reward-art {
+    color: #ff4d5a;
+    text-shadow: 0 0 8px rgba(255, 77, 90, 0.3);
+  }
+
+  .reward-message {
+    color: #ff8992;
+  }
+
+  .reward-spins,
+  .reward-rating {
+    color: #ff4d5a;
+  }
+
+  .replay-button {
+    border-color: #ff4d5a;
+    color: #ff8992;
+
+    &:hover,
+    &:focus-visible {
+      background: #ff4d5a;
+      color: #140d10;
+    }
+  }
+
+  // Failure is immediate; do not reuse the winning door-open delay.
+  .reward-header,
+  .reward-art,
+  .reward-message,
+  .reward-stats {
+    opacity: 1;
+    animation: none;
+  }
+
+  .replay-button {
+    opacity: 1;
+    visibility: visible;
+    animation: none;
+  }
+}
+
+@keyframes counter-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 8px rgba(255, 77, 90, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(255, 77, 90, 0.65);
+  }
+}
+
+@keyframes safe-lockout-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-6px);
+  }
+  40% {
+    transform: translateX(6px);
+  }
+  60% {
+    transform: translateX(-4px);
+  }
+  80% {
+    transform: translateX(4px);
+  }
+}
+
+@keyframes lockout-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 8px rgba(255, 77, 90, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(255, 77, 90, 0.8);
+  }
+}
+
+@keyframes access-denied-enter {
+  from {
+    opacity: 0;
+    transform: translateY(15px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes denied-flicker {
+  0%,
+  18%,
+  22%,
+  100% {
+    opacity: 1;
+  }
+  20%,
+  24% {
+    opacity: 0.3;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .safe.locked-out .safe-door,
+  .safe.locked-out .spin-button,
+  .safe.attempt-danger .spin-count,
+  .reward-panel.access-denied,
+  .reward-panel.access-denied .reward-title {
+    animation: none;
+  }
+
+  .reward-panel.access-denied {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+// Respect reduced-motion preferences for terminal status updates.
+@media (prefers-reduced-motion: reduce) {
+  .game-status.status-updated { animation: none; }
+}
+
+// Clickable dial surfaces (manual guess forms retain their own controls).
+.dial:not(.matched) {
+  cursor: pointer;
+}
+
+.dial.matched {
+  cursor: default;
+}
+
+.dial-guess {
+  cursor: auto;
 }
