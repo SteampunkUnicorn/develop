@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Search books and keep a personal reading shelf."
+    />
+    <title>Little Personal Library</title>
+    <link rel="stylesheet" href="style.min.css" />
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <main class="library-app">
+      <header class="intro">
+        <p class="eyebrow">A little space for books</p>
+        <h1>Little Personal Library</h1>
+        <p>Find your next read. Keep your favorites close.</p>
+      </header>
+
+      <div class="view-toolbar" role="group" aria-label="Book display">
+        <span>View</span>
+        <button
+          id="card-view"
+          type="button"
+          aria-pressed="true"
+          aria-controls="collection results"
+        >
+          Cards
+        </button>
+        <button
+          id="list-view"
+          type="button"
+          aria-pressed="false"
+          aria-controls="collection results"
+        >
+          List
+        </button>
+      </div>
+
+      <section class="collection-section" aria-labelledby="collection-heading">
+        <div class="section-heading">
+          <h2 id="collection-heading">
+            Your shelf <span id="collection-count">0 books</span>
+          </h2>
+          <button id="clear-collection" class="text-button" disabled>
+            Clear shelf
+          </button>
+        </div>
+        <p id="collection-status" class="helper" role="status">
+          Your books are saved in this browser.
+        </p>
+        <label for="shelf-filter">Show books</label>
+        <select id="shelf-filter">
+          <option value="all">All books</option>
+          <option value="want">Want to read</option>
+          <option value="reading">Reading</option>
+          <option value="finished">Finished</option>
+        </select>
+        <div id="collection" class="book-grid collection-grid"></div>
+      </section>
+
+      <section aria-labelledby="explore-heading">
+        <h2 id="explore-heading">Find a book</h2>
+        <form id="search-form" role="search">
+          <label for="search-input">Search by title or author</label>
+          <div class="search-row">
+            <input
+              id="search-input"
+              name="query"
+              type="search"
+              placeholder="Try Pride and Prejudice or Ursula Le Guin"
+              maxlength="120"
+              required
+            />
+            <button type="submit">Search</button>
+          </div>
+        </form>
+        <div class="section-heading results-heading">
+          <p id="search-status" role="status" aria-live="polite"></p>
+          <button id="retry" class="text-button" hidden>Try again</button>
+        </div>
+        <div id="results" class="book-grid" aria-busy="false"></div>
+        <nav class="pagination" aria-label="Book results pages" hidden>
+          <button id="previous" class="secondary">Previous</button>
+          <span id="page-number"></span>
+          <button id="next" class="secondary">Next</button>
+        </nav>
+      </section>
+
+      <footer>
+        Book data and covers from
+        <a
+          href="https://openlibrary.org/"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Open Library</a
+        >. Your shelf is saved on this browser and device.
+      </footer>
+    </main>
+  </body>
+</html>
