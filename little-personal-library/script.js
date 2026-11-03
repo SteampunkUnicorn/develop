@@ -57,6 +57,7 @@ function saveShelf(message) {
 
 function createCard(book, onShelf = false) {
   const card = element('article', 'book-card');
+  card.style.setProperty('--book-transition', `book-${onShelf ? 'shelf' : 'search'}-${book.key.split('/').pop()}`);
   const imageWrap = element('div', 'image-wrap');
   const fallback = () => imageWrap.replaceChildren(element('span', 'image-fallback', 'No cover available'));
   if (Number.isInteger(book.cover_i) && book.cover_i > 0) {
@@ -193,6 +194,26 @@ async function loadBooks() {
   }
 }
 
+function clearSearchResults() {
+  controller?.abort();
+  controller = null;
+  query = '';
+  page = 1;
+  totalPages = 1;
+  books = [];
+  results.replaceChildren();
+  results.setAttribute('aria-busy', 'false');
+  pagination.hidden = true;
+  $('#page-number').textContent = '';
+  $('#retry').hidden = true;
+  searchStatus.textContent = 'Search for a title or author to get started.';
+}
+
+// The input event covers typing, deleting, and the native search clear button.
+$('#search-input').addEventListener('input', () => {
+  if (!$('#search-input').value.trim()) clearSearchResults();
+});
+
 $('#search-form').addEventListener('submit', (event) => {
   event.preventDefault();
   const term = $('#search-input').value.trim();
@@ -222,8 +243,35 @@ function setView(view) {
   try { localStorage.setItem(VIEW_STORAGE_KEY, selected); } catch { /* Still works for this visit. */ }
 }
 
-$('#card-view').addEventListener('click', () => setView('cards'));
-$('#list-view').addEventListener('click', () => setView('list'));
+function changeView(view) {
+  if ($('.library-app').getAttribute('data-view') === view) return;
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!document.startViewTransition || reduceMotion) { setView(view); return; }
+  document.documentElement.classList.add('view-changing');
+  const transition = document.startViewTransition(() => setView(view));
+  transition.finished.catch(() => {}).finally(() => {
+    document.documentElement.classList.remove('view-changing');
+  });
+}
+$('#card-view').addEventListener('click', () => changeView('cards'));
+$('#list-view').addEventListener('click', () => changeView('list'));
+
+// Theme preference is separate from the saved shelf and view.
+const THEME_KEY = 'little-personal-library-theme';
+function setTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  $('#theme-toggle').setAttribute('aria-pressed', String(theme === 'dark'));
+  try { localStorage.setItem(THEME_KEY, theme); } catch { /* Keep working without storage. */ }
+}
+let theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+try {
+  const stored = localStorage.getItem(THEME_KEY);
+  if (stored === 'light' || stored === 'dark') theme = stored;
+} catch { /* Use system preference. */ }
+setTheme(theme);
+$('#theme-toggle').addEventListener('click', () => {
+  setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+});
 let initialView = 'cards';
 try { initialView = localStorage.getItem(VIEW_STORAGE_KEY) || 'cards'; } catch { /* Use the default. */ }
 setView(initialView);
